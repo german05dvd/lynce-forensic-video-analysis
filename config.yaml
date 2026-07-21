@@ -1,0 +1,38 @@
+# Lynce Forensics v4.0 "Ghost" - Configuración Maestra
+# Basado en principios de DVR-Scan + Verificación con IA.
+
+model:
+  name: "yolov8n.pt"
+  confidence_threshold: 0.3
+  classes: [0]  # Solo personas
+
+processing:
+  # --- Motor de Movimiento (Ligero, similar a DVR-Scan) ---
+  motion_analysis_fps: 4         # Analizar 4 frames por segundo real (suficiente para no perder movimiento)
+  motion_min_area: 1200          # Área mínima de contorno de movimiento (filtra ruido de sensor)
+  motion_threshold: 15           # Umbral de sensibilidad al cambio de color en la imagen (0-255)
+  motion_absence_to_close: 2.0   # Segundos sin movimiento para cerrar un segmento
+
+  # --- Motor de Verificación con IA (YOLO de alto poder) ---
+  inference_size: 640            # Tamaño de inferencia (el máximo posible en CPU)
+  skip_frames_in_segment: 6      # Dentro de un segmento de movimiento, verificar 1 de cada N frames
+  min_person_detections: 2       # Mínimas detecciones de persona en un segmento para enviarlo a recorte
+  min_absence_seconds: 2.0       # Segundos sin detectar persona para cerrar un evento
+
+  # --- Estrategia de Región de Interés (ROI) ---
+  roi_upsample: true             # Ampliar la zona ROI al tamaño de inferencia para detectar personas lejanas
+  margin_seconds: 2.0            # Segundos de margen añadidos al inicio y final del clip recortado
+
+output:
+  base_dir: "output"
+  save_clips: true
+  save_metadata: true
+  clip_format: "mp4"
+
+roi:
+  enabled: true
+  x1: 0.0
+  y1: 0.0
+  x2: 0.25
+  y2: 0.25
+  margin: 10
